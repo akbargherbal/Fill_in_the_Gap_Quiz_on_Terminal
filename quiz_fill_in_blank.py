@@ -120,14 +120,14 @@ Correct!
     else:
         print(Fore.RED, f"""Incorrect! The word we're looking for is:
         """)
-        print(Fore.LIGHTYELLOW_EX, f"""{q[1].upper()}!""")
+        for i in range(3):
+            print(Fore.LIGHTYELLOW_EX, f"""
+        {q[1].upper()}!""")
+            sleep(1)
         incorrect += 1
-    
-    
-    print(f'Current score is {100 * score} ---- {score} Correct Answer; {incorrect} Incorrect Answer')
-    print(f'{idx + 1} of {number_of_questions}; {number_of_questions - (idx + 1)} to go!')
+        
     print('-'*50)
-    sleep(3)
+    sleep(0.1)
 print('Closing ZIP FILE!')
 zf.close()
 print('End of Quiz; Goodbye!')
