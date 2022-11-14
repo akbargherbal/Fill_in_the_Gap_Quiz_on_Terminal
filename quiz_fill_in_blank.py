@@ -6,8 +6,26 @@ import pandas as pd
 from itertools import chain
 from collections import Counter
 import os
-
+import subprocess
 from colorama import Fore, Back, Style
+
+import subprocess
+
+cmd_line = """
+curl
+-o
+COMPLETED_QUIZZES.txt
+https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/COMPLETED_QUIZZES.txt
+--ssl-no-revoke
+""".strip().split('\n')
+
+
+try:
+    print('Updating COMPLETED_QUIZZES.txt...')
+    subprocess.call(cmd_line)
+except Exception as e:
+    print(e)
+    print('Failed to update COMPLETED_QUIZZES.txt')
 
 
 from zipfile import ZipFile
