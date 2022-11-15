@@ -24,7 +24,7 @@ def time_now():
 
 
 
-
+start = time_now()
 cmd_line = """
 curl
 -o
@@ -192,6 +192,12 @@ if finished:
     quiz_name = [quiz]
     correct_answers = [score]
     incorrect_answers = [incorrect]
+    end = time_now()
+    duration_minutes = (end - start).seconds / 60
+    duration_minutes = round(duration_minutes, 2)
+    duration_minutes = [duration_minutes]
+
+
     try:
         print('Trying to update Quiz Progress on Github...')
         df_pr = pd.read_csv('porgress_quizzes.csv', encoding='utf-8') 
@@ -199,6 +205,7 @@ if finished:
         df_pr['QUIZ_NAME'] = quiz_name
         df_pr['CORRECT_ANSWERS'] = correct_answers
         df_pr['INCORRECT_ANSWERS'] = incorrect_answers
+        df_pr['DURATION_MINUTES'] = duration_minutes
         df_pr.to_csv('porgress_quizzes.csv', encoding='utf-8', index=False)
 
         print('Pushing to Github...')
