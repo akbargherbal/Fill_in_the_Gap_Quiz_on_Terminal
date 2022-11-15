@@ -23,12 +23,10 @@ def time_now():
     return now
 
 
-url_progress = 'https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/porgress_quizzes.csv'
-url_revision = 'https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/REVISE_QUIZ.csv'
+
 start = time_now()
 cmd_line = f"""
-curl -o porgress_quizzes.csv {url_progress} --ssl-no-revoke
-curl -o REVISE_QUIZ.csv {url_revision} --ssl-no-revoke
+git pull origin master
 """.strip().split('\n')
 
 
