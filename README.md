@@ -6,6 +6,7 @@
 	- COMPLETED_QUIZZES_WEB.tx
 - To keep track of progress; the following file will be used.
 	- porgress_quizzes.csv
+- Get rid of sort function ... use sorted on proper files names.
 - Cancel Curl Command
 - Delete Quiz_Type in the quizzes database; waste of space!
 - Arabic UN Corpus
