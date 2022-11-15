@@ -121,7 +121,7 @@ with open('COMPLETED_QUIZZES_WEB.txt', encoding='utf-8', mode='+a') as f:
 
 quiz_list = dict_collection_vs_file[dict_dig_vs_collection[quiz_type]]
 
-quiz_list = [i for i in quiz_list if i not in (set_completed_quizzes - set_completed_quizzes_web)]
+quiz_list = [i for i in quiz_list if i not in (set_completed_quizzes.union(set_completed_quizzes_web))]
 
 
 quiz = quiz_list[0]
