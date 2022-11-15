@@ -10,3 +10,4 @@
 - Cancel Curl Command
 - Delete Quiz_Type in the quizzes database; waste of space!
 - Arabic UN Corpus
+- Revision questions are NOT stored; clearly this is a bug.
