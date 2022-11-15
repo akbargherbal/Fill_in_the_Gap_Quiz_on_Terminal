@@ -167,7 +167,12 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        df_incorrect = df_incorrect.append({'QUESTION_TEXT': q[0], 'OPTION_1': q[1], 'OPTION_2': q[2], 'OPTION_3': q[3]}).reset_index(drop=True)
+        df_inc = pd.DataFrame()
+        df_inc['QUESTION_TEXT'] = q[0]
+        df_inc['OPTION_1'] = q[1]
+        df_inc['OPTION_2'] = q[2]
+        df_inc['OPTION_3'] = q[3]
+        df_incorrect = df_incorrect.append(df_inc).reset_index(drop=True)
 
     print('-'*50)
     sleep(0.1)
