@@ -23,23 +23,23 @@ def time_now():
     return now
 
 
-
+url_progress = 'https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/porgress_quizzes.csv'
+url_revision = 'https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/REVISE_QUIZ.csv'
 start = time_now()
-cmd_line = """
-curl
--o
-COMPLETED_QUIZZES_WEB.txt
-https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/COMPLETED_QUIZZES.txt
---ssl-no-revoke
+cmd_line = f"""
+curl -o porgress_quizzes.csv {url_progress} --ssl-no-revoke
+curl -o REVISE_QUIZ.csv {url_revision} --ssl-no-revoke
 """.strip().split('\n')
 
 
 try:
-    print('Updating COMPLETED_QUIZZES.txt...')
-    subprocess.call(cmd_line)
+    print('Fetching Data from Github ...')
+    for cmd in cmd_line:
+        subprocess.run(cmd, shell=True)
+    
 except Exception as e:
     print(e)
-    print('Failed to update COMPLETED_QUIZZES.txt')
+    print(f'Failed to update porgress_quizzes.csv or REVISE_QUIZ.csv from Github!')
 
 
 from zipfile import ZipFile
@@ -106,22 +106,12 @@ print(Fore.CYAN, f"""
 You'll be tested in the following collection:
 {dict_dig_vs_collection[quiz_type].replace("/", "")}""")
 
-
-with open('COMPLETED_QUIZZES.txt', encoding='utf-8', mode='+a') as f:
-    if f.tell() != 0:
-        f.seek(0)
-    set_completed_quizzes = set([i.strip() for i in f.readlines()])
-
-with open('COMPLETED_QUIZZES_WEB.txt', encoding='utf-8', mode='+a') as f:
-    if f.tell() != 0:
-        f.seek(0)
-    set_completed_quizzes_web = set([i.strip() for i in f.readlines()])
-
-
+set_completed_quizzes = pd.read_csv(f'./porgress_quizzes.csv', encoding='utf-8')
+set_completed_quizzes = set(list(set_completed_quizzes['QUIZ_NAME']))
 
 quiz_list = dict_collection_vs_file[dict_dig_vs_collection[quiz_type]]
 
-quiz_list = [i for i in quiz_list if i not in (set_completed_quizzes.union(set_completed_quizzes_web))]
+quiz_list = [i for i in quiz_list if i not in set_completed_quizzes]
 
 
 quiz = quiz_list[0]
@@ -132,7 +122,7 @@ print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
 df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
-
+df_inc = pd.DataFrame()
 
 score = 0
 progress = 0
@@ -167,7 +157,7 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        df_inc = pd.DataFrame()
+        
         df_inc['QUESTION_TEXT'] = q[0]
         df_inc['OPTION_1'] = q[1]
         df_inc['OPTION_2'] = q[2]
@@ -180,13 +170,12 @@ print('Closing ZIP FILE!')
 zf.close()
 print('End of Quiz; Goodbye!')
 
-with open('COMPLETED_QUIZZES.txt', encoding='utf-8', mode='+a') as f:
-    f.write(f'{quiz}\n')
-    finished = True
-    ############
-    print('Trying to update Quiz Progress on Github...')
-    end = time_now()
-    ############
+
+finished = True
+############
+print('Trying to update Quiz Progress on Github repository ...')
+end = time_now()
+############
 
 cmd = f"""
 git add .
