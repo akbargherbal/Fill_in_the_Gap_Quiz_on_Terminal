@@ -1,15 +1,11 @@
-from random import randint
-from time import sleep
 from collections import defaultdict
 
 import pandas as pd
 from itertools import chain
-from collections import Counter
+
 import os
 import subprocess
 from colorama import Fore, Back, Style
-
-import subprocess
 
 import subprocess
 from time import sleep
@@ -57,24 +53,6 @@ for i in zf.filelist:
     if i.filename.endswith('.csv'):
         csv_files.append(i.filename)
 
-def sort_function(list_01, extra='A_Bunch_of_Text_'):
-    '''Sort by integers not string; i.e. 29 comes before 100!'''
-    result = [i.replace(extra, '') for i in list_01] # REMOVE PREFIXES IF NECESSARY; LIKE FOLDER PATH.
-    result = [''.join([i for i in j if i.isnumeric()]) for j in result] # What remains only valid file name
-    
-    result = list(zip(list_01, result)) # zip input and output
-    
-    result = [(j ,'0') if (set(i) == {'0'}) else (j, i.lstrip('0')) for (j, i) in result]
-    
-    try:
-        result = sorted(result, key= lambda i: int(i[1]))
-        return [i[0] for i in result]
-    
-    except Exception as e:
-        print('ERROR: Sort Exception!')
-        print(e)
-    assert len(list_01) == len(result),f'Something went wrong; input size {len(list_01)} should equal output {len(result)} size!'
-
 dict_collection_vs_file = defaultdict(list)
 for quiz in quiz_collections:
     for csv_f in csv_files:
@@ -82,7 +60,7 @@ for quiz in quiz_collections:
             dict_collection_vs_file[quiz].append(csv_f)
 dict_collection_vs_file = dict(dict_collection_vs_file)            
 
-dict_collection_vs_file = {k: sort_function(v, k) for k,v in dict_collection_vs_file.items()}
+dict_collection_vs_file = {k: sorted(v) for k,v in dict_collection_vs_file.items()}
 
 list_quiz_collection = list(dict_collection_vs_file)
 
