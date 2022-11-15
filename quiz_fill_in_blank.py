@@ -11,10 +11,24 @@ from colorama import Fore, Back, Style
 
 import subprocess
 
+import subprocess
+from time import sleep
+from datetime import datetime
+def time_now():
+    '''Get Current Time'''
+    
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S.%f")[:-4]
+    print("Current Time =", current_time)
+    return now
+
+
+
+
 cmd_line = """
 curl
 -o
-COMPLETED_QUIZZES.txt
+COMPLETED_QUIZZES_WEB.txt
 https://raw.githubusercontent.com/akbargherbal/Fill_in_the_Gap_Quiz_on_Terminal/master/COMPLETED_QUIZZES.txt
 --ssl-no-revoke
 """.strip().split('\n')
@@ -94,19 +108,27 @@ You'll be tested in the following collection:
 
 
 with open('COMPLETED_QUIZZES.txt', encoding='utf-8', mode='+a') as f:
+    if f.tell() != 0:
+        f.seek(0)
     set_completed_quizzes = set([i.strip() for i in f.readlines()])
 
-set_completed_quizzes
+with open('COMPLETED_QUIZZES_WEB.txt', encoding='utf-8', mode='+a') as f:
+    if f.tell() != 0:
+        f.seek(0)
+    set_completed_quizzes_web = set([i.strip() for i in f.readlines()])
+
+
 
 quiz_list = dict_collection_vs_file[dict_dig_vs_collection[quiz_type]]
 
-quiz_list = [i for i in quiz_list if i not in set_completed_quizzes]
+quiz_list = [i for i in quiz_list if i not in (set_completed_quizzes - set_completed_quizzes_web)]
+
 
 quiz = quiz_list[0]
 
 df = pd.read_csv(zf.open(quiz), encoding='utf-8')
 df = df.sample(frac=1).reset_index(drop=True)
-print(Fore.MAGENTA, f'Number of Questions in this Quiz: {len(df)}')
+print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
 
@@ -152,3 +174,39 @@ print('End of Quiz; Goodbye!')
 
 with open('COMPLETED_QUIZZES.txt', encoding='utf-8', mode='+a') as f:
     f.write(f'{quiz}\n')
+    finished = True
+    ############
+    print('Trying to update Quiz Progress on Github...')
+    end = time_now()
+    ############
+
+cmd = f"""
+git add .
+git commit -m "Git pushed from inside python script @ {end}"
+git push origin master  
+""".strip().split('\n')
+
+
+if finished:
+    quiz_time = [end]
+    quiz_name = [quiz]
+    correct_answers = [score]
+    incorrect_answers = [incorrect]
+    try:
+        print('Trying to update Quiz Progress on Github...')
+        df_pr = pd.read_csv('porgress_quizzes.csv', encoding='utf-8') 
+        df_pr['QUIZ_DATE_TIME'] = quiz_time
+        df_pr['QUIZ_NAME'] = quiz_name
+        df_pr['CORRECT_ANSWERS'] = correct_answers
+        df_pr['INCORRECT_ANSWERS'] = incorrect_answers
+        df_pr.to_csv('porgress_quizzes.csv', encoding='utf-8', index=False)
+
+        print('Pushing to Github...')
+        for command in cmd:
+            print(command)
+            subprocess.run(command)
+            print('-------------------------')
+
+    except Exception as e:
+        print("Couldn't update quiz progress on Github!")
+        print(e)
