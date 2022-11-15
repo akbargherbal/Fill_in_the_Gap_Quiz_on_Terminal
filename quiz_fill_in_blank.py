@@ -131,6 +131,8 @@ df = df.sample(frac=1).reset_index(drop=True)
 print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
+df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
+
 
 score = 0
 progress = 0
@@ -165,7 +167,8 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        
+        df_incorrect = df_incorrect.append({'QUESTION_TEXT': q[0], 'OPTION_1': q[1], 'OPTION_2': q[2], 'OPTION_3': q[3]}).reset_index(drop=True)
+
     print('-'*50)
     sleep(0.1)
 print('Closing ZIP FILE!')
@@ -200,13 +203,16 @@ if finished:
 
     try:
         print('Trying to update Quiz Progress on Github...')
-        df_pr = pd.read_csv('porgress_quizzes.csv', encoding='utf-8') 
+        df_read = pd.read_csv('porgress_quizzes.csv', encoding='utf-8') 
+        df_pr = pd.DataFrame()
         df_pr['QUIZ_DATE_TIME'] = quiz_time
         df_pr['QUIZ_NAME'] = quiz_name
         df_pr['CORRECT_ANSWERS'] = correct_answers
         df_pr['INCORRECT_ANSWERS'] = incorrect_answers
         df_pr['DURATION_MINUTES'] = duration_minutes
+        df_pr = pd.concat([df_read, df_pr], axis=0)
         df_pr.to_csv('porgress_quizzes.csv', encoding='utf-8', index=False)
+        df_incorrect.to_csv('REVISE_QUIZ.csv', encoding='utf-8', index=False)
 
         print('Pushing to Github...')
         for command in cmd:
