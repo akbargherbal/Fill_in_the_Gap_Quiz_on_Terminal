@@ -138,7 +138,8 @@ Correct!
         df_inc['OPTION_1'] = q[1]
         df_inc['OPTION_2'] = q[2]
         df_inc['OPTION_3'] = q[3]
-        df_incorrect = df_incorrect.append(df_inc).reset_index(drop=True)
+        
+        df_incorrect = pd.concat([df_incorrect, df_inc], axis=0).reset_index(drop=True)
 
     print('-'*50)
     sleep(0.1)
