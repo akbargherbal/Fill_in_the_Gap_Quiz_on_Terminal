@@ -123,7 +123,7 @@ incorrect = 0
 sleep(3)
 
 
-df_inc = pd.DataFrame()
+
 for (idx, q) in enumerate(df):
     os.system('cls' if os.name == 'nt' else 'clear')
     if idx != 0:
@@ -150,18 +150,17 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        
+        df_inc = pd.DataFrame()
         df_inc['QUESTION_TEXT'] = q[0]
         df_inc['OPTION_1'] = q[1]
         df_inc['OPTION_2'] = q[2]
         df_inc['OPTION_3'] = q[3]
         
-        df_inc = df_inc.reset_index(drop=True)
+        df_incorrect = df_incorrect.append(df_inc).reset_index(drop=True)
 
     print('-'*50)
     sleep(0.1)
 
-df_incorrect = pd.concat([df_incorrect, df_inc], axis=0).reset_index(drop=True)
 print('Closing ZIP FILE!')
 zf.close()
 print('End of Quiz; Goodbye!')
