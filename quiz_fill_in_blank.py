@@ -115,6 +115,7 @@ print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
 df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
+df_inc = pd.DataFrame(data = {i:[] for i in df_incorrect.columns})
 
 score = 0
 progress = 0
@@ -150,7 +151,7 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        df_inc = pd.DataFrame()
+        
         df_inc['QUESTION_TEXT'] = q[0]
         df_inc['OPTION_1'] = q[1]
         df_inc['OPTION_2'] = q[2]
