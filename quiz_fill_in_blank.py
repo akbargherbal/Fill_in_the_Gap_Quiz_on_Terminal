@@ -1,15 +1,17 @@
 from collections import defaultdict
-
-import pandas as pd
 from itertools import chain
-
 import os
 import subprocess
 from colorama import Fore, Back, Style
 
-import subprocess
+import pandas as pd
+
+
 from time import sleep
 from datetime import datetime
+from zipfile import ZipFile
+
+# Time of Quiz
 def time_now():
     '''Get Current Time'''
     
@@ -18,54 +20,69 @@ def time_now():
     print("Current Time =", current_time)
     return now
 
-
-
 start = time_now()
+
+# Fetch Data from Github
 cmd_line = f"""
 git pull origin master
 """.strip().split('\n')
 
+def fetch_data():
+    try:
+        print('Fetching Data from Github ...')
+        for cmd in cmd_line:
+            subprocess.run(cmd, shell=True)
+        return True
+        
+    except Exception as e:
+        print(e)
+        print(Fore.RED, f'Failed to update porgress_quizzes.csv or REVISE_QUIZ.csv from Github!')
+        return False
 
-try:
-    print('Fetching Data from Github ...')
-    for cmd in cmd_line:
-        subprocess.run(cmd, shell=True)
-    
-except Exception as e:
-    print(e)
-    print(f'Failed to update porgress_quizzes.csv or REVISE_QUIZ.csv from Github!')
+data_fetched = fetch_data()
+if data_fetched:
+    print(Fore.LIGHTGREEN_EX, 'Data Fetched from Github!')
 
 
-from zipfile import ZipFile
 os.system('cls' if os.name == 'nt' else 'clear')
 
+
 zf = ZipFile('./QUIZ_ON_CMD.zip')
+# Quiz Collections
+def get_quiz_collection(zp_object):
+    quiz_collections  = []
+    for i in zp_object.filelist:
+        if i.filename.endswith('.csv') == False:
+            quiz_collections.append(i.filename)
 
-quiz_collections  = []
-for i in zf.filelist:
-    if i.filename.endswith('.csv') == False:
-        quiz_collections.append(i.filename)
+    return quiz_collections
 
-quiz_collections
+quiz_collections = get_quiz_collection(zf)
 
-csv_files  = []
-for i in zf.filelist:
-    if i.filename.endswith('.csv'):
-        csv_files.append(i.filename)
+# List of CSV Files
+def get_csv_files(zp_object):
+    csv_files = []
+    for i in zp_object.filelist:
+        if i.filename.endswith('.csv'):
+            csv_files.append(i.filename)
+    return csv_files
+csv_files  = get_csv_files(zf)
 
-dict_collection_vs_file = defaultdict(list)
-for quiz in quiz_collections:
-    for csv_f in csv_files:
-        if csv_f.startswith(quiz):
-            dict_collection_vs_file[quiz].append(csv_f)
-dict_collection_vs_file = dict(dict_collection_vs_file)            
+# Mapping Quiz Collections to CSV Files
+def create_collections_vs_quiz(quiz_collections, csv_files):
+    'Map Quiz Collections to Quiz Files'
+    dict_collection_vs_file = defaultdict(list)
+    for quiz in quiz_collections:
+        for csv_f in csv_files:
+            if csv_f.startswith(quiz):
+                dict_collection_vs_file[quiz].append(csv_f)
+    dict_collection_vs_file = dict(dict_collection_vs_file)            
+    dict_collection_vs_file = {k: sorted(v) for k,v in dict_collection_vs_file.items()}
+    return dict_collection_vs_file
 
-dict_collection_vs_file = {k: sorted(v) for k,v in dict_collection_vs_file.items()}
 
+dict_collection_vs_file = create_collections_vs_quiz(quiz_collections, csv_files)
 list_quiz_collection = list(dict_collection_vs_file)
-
-list_quiz_collection
-
 dict_dig_vs_collection = {idx:i for (idx, i) in enumerate(list_quiz_collection)}
 
 print('Available Quiz Collections are as Follows:')
@@ -98,15 +115,15 @@ print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
 df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
-df_inc = pd.DataFrame()
 
 score = 0
 progress = 0
 number_of_questions = len(df)
 incorrect = 0
-
-
 sleep(3)
+
+
+df_inc = pd.DataFrame()
 for (idx, q) in enumerate(df):
     os.system('cls' if os.name == 'nt' else 'clear')
     if idx != 0:
@@ -139,10 +156,12 @@ Correct!
         df_inc['OPTION_2'] = q[2]
         df_inc['OPTION_3'] = q[3]
         
-        df_incorrect = pd.concat([df_incorrect, df_inc], axis=0).reset_index(drop=True)
+        df_inc = df_inc.reset_index(drop=True)
 
     print('-'*50)
     sleep(0.1)
+
+df_incorrect = pd.concat([df_incorrect, df_inc], axis=0).reset_index(drop=True)
 print('Closing ZIP FILE!')
 zf.close()
 print('End of Quiz; Goodbye!')
