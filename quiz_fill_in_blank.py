@@ -20,7 +20,6 @@ def time_now():
     print("Current Time =", current_time)
     return now
 
-start = time_now()
 
 # Fetch Data from Github
 cmd_line = f"""
@@ -108,6 +107,7 @@ quiz_list = [i for i in quiz_list if i not in set_completed_quizzes]
 
 
 quiz = quiz_list[0]
+start = time_now()
 
 df = pd.read_csv(zf.open(quiz), encoding='utf-8')
 df = df.sample(frac=1).reset_index(drop=True)
@@ -115,7 +115,6 @@ print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
 df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
-df_inc = pd.DataFrame(data = {i:[] for i in df_incorrect.columns})
 
 score = 0
 progress = 0
@@ -151,11 +150,13 @@ Correct!
         {q[1].upper()}!""")
             sleep(1)
         incorrect += 1
-        
-        df_inc['QUESTION_TEXT'] = q[0]
-        df_inc['OPTION_1'] = q[1]
-        df_inc['OPTION_2'] = q[2]
-        df_inc['OPTION_3'] = q[3]
+        df_inc = pd.DataFrame(data = {i:[] for i in df_incorrect.columns})
+        df_inc_cols = list(df_inc.columns)
+
+        df_inc[df_inc_cols[0]] = q[0]
+        df_inc[df_inc_cols[1]] = q[1]
+        df_inc[df_inc_cols[2]] = q[2]
+        df_inc[df_inc_cols[3]] = q[3]
         
         df_incorrect = df_incorrect.append(df_inc).reset_index(drop=True)
 
