@@ -42,11 +42,12 @@ data_fetched = fetch_data()
 if data_fetched:
     print(Fore.LIGHTGREEN_EX, 'Data Fetched from Github!')
 
-
+# Clear Screen
 os.system('cls' if os.name == 'nt' else 'clear')
 
 
 zf = ZipFile('./QUIZ_ON_CMD.zip')
+
 # Quiz Collections
 def get_quiz_collection(zp_object):
     quiz_collections  = []
@@ -114,7 +115,10 @@ df = df.sample(frac=1).reset_index(drop=True)
 print(Fore.LIGHTBLUE_EX, f'Number of Questions in this Quiz: {len(df)}')
 
 df =  list(zip(df.QUESTION_TEXT, df.OPTION_1, df.OPTION_2, df.OPTION_3))
+
 df_incorrect = pd.read_csv('REVISE_QUIZ.csv', encoding='utf-8')
+df_inc = pd.DataFrame(data = {i:[] for i in df_incorrect.columns})
+df_inc_cols = list(df_inc.columns)
 
 score = 0
 progress = 0
@@ -145,19 +149,16 @@ Correct!
     else:
         print(Fore.RED, f"""Incorrect! The word we're looking for is:
         """)
+
         for i in range(3):
             print(Fore.LIGHTYELLOW_EX, f"""
         {q[1].upper()}!""")
             sleep(1)
-        incorrect += 1
-        df_inc = pd.DataFrame(data = {i:[] for i in df_incorrect.columns})
-        df_inc_cols = list(df_inc.columns)
-
-        df_inc[df_inc_cols[0]] = q[0]
-        df_inc[df_inc_cols[1]] = q[1]
-        df_inc[df_inc_cols[2]] = q[2]
-        df_inc[df_inc_cols[3]] = q[3]
         
+        incorrect += 1
+        
+        data = dict(zip(df_inc_cols, q))
+        df_inc = df_inc.append(data, ignore_index=True)
         df_incorrect = df_incorrect.append(df_inc).reset_index(drop=True)
 
     print('-'*50)
@@ -201,9 +202,10 @@ if finished:
         df_pr['CORRECT_ANSWERS'] = correct_answers
         df_pr['INCORRECT_ANSWERS'] = incorrect_answers
         df_pr['DURATION_MINUTES'] = duration_minutes
+        
         df_pr = pd.concat([df_read, df_pr], axis=0)
         df_pr.to_csv('porgress_quizzes.csv', encoding='utf-8', index=False)
-        df_incorrect.to_csv('REVISE_QUIZ.csv', encoding='utf-8', index=False,  header=None, mode='a')
+        df_incorrect.reset_index(drop=True).to_csv('REVISE_QUIZ.csv', encoding='utf-8', index=False)
 
         print('Pushing to Github...')
         for command in cmd:

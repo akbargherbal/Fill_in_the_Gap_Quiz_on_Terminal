@@ -14,3 +14,27 @@ Traceback (most recent call last):
   File "play.py", line 18, in <module>
     while play_again.lower().strip()[0] not in ['y', 'n']:
 IndexError: string index out of range
+2022-11-21 21:58:10,695 - ERROR - 'DataFrame' object has no attribute 'close'
+Traceback (most recent call last):
+  File "play.py", line 27, in <module>
+    exec(code)
+  File "<string>", line 117, in <module>
+  File "c:\users\gherb\appdata\local\programs\python\python38\lib\site-packages\pandas\core\generic.py", line 5487, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'close'
+2022-11-21 21:58:52,512 - ERROR - 'DataFrame' object has no attribute 'close'
+Traceback (most recent call last):
+  File "play.py", line 27, in <module>
+    exec(code)
+  File "<string>", line 117, in <module>
+  File "c:\users\gherb\appdata\local\programs\python\python38\lib\site-packages\pandas\core\generic.py", line 5487, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'close'
+2022-11-21 21:59:19,807 - ERROR - 'DataFrame' object has no attribute 'close'
+Traceback (most recent call last):
+  File "play.py", line 25, in <module>
+    exec(code)
+  File "<string>", line 117, in <module>
+  File "c:\users\gherb\appdata\local\programs\python\python38\lib\site-packages\pandas\core\generic.py", line 5487, in __getattr__
+    return object.__getattribute__(self, name)
+AttributeError: 'DataFrame' object has no attribute 'close'
