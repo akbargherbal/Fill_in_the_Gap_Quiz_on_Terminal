@@ -203,7 +203,7 @@ if finished:
         df_pr['DURATION_MINUTES'] = duration_minutes
         df_pr = pd.concat([df_read, df_pr], axis=0)
         df_pr.to_csv('porgress_quizzes.csv', encoding='utf-8', index=False)
-        df_incorrect.to_csv('REVISE_QUIZ.csv', encoding='utf-8', index=False)
+        df_incorrect.to_csv('REVISE_QUIZ.csv', encoding='utf-8', index=False,  header=None, mode='a')
 
         print('Pushing to Github...')
         for command in cmd:
